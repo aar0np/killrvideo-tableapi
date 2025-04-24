@@ -15,7 +15,7 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>23</java.version>
-		<vaadin.version>24.6.5</vaadin.version>
+		<vaadin.version>24.7.2</vaadin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -30,6 +30,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<!-- Core Cassandra -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-cassandra</artifactId>
+		</dependency>
+		<!-- Astra db starter -->
+		<dependency>
+			<groupId>com.datastax.astra</groupId>
+			<artifactId>astra-spring-boot-3x-starter</artifactId>
+			<version>1.2.9</version>
 		</dependency>
 		<!-- Data API -->
 		<dependency>

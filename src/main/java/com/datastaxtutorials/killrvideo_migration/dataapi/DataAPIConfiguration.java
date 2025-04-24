@@ -13,6 +13,7 @@ import com.datastax.astra.client.databases.Database;
 import com.datastax.astra.client.tables.Table;
 
 import com.datastaxtutorials.killrvideo_migration.dataapi.entities.LatestVideoTableEntity;
+import com.datastaxtutorials.killrvideo_migration.dataapi.entities.VideoRatingTableEntity;
 import com.datastaxtutorials.killrvideo_migration.dataapi.entities.VideoTableEntity;
 
 @Configuration
@@ -60,6 +61,16 @@ public class DataAPIConfiguration {
 		} else {
 			logger.info("Table 'latest_videos' does not exist, creating it ...");
 			return db.createTable(LatestVideoTableEntity.class);
+		}
+	}
+    
+    @Bean("table.video_ratings")
+    public Table<VideoRatingTableEntity> tableVideoRatings(Database db) {
+		if (db.tableExists("video_ratings")) {
+			return db.getTable(VideoRatingTableEntity.class);
+		} else {
+			logger.info("Table 'video_ratings' does not exist, creating it ...");
+			return db.createTable(VideoRatingTableEntity.class);
 		}
 	}
 }

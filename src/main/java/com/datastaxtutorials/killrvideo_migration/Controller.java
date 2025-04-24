@@ -3,6 +3,7 @@ package com.datastaxtutorials.killrvideo_migration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,11 @@ import com.datastaxtutorials.killrvideo_migration.dataapi.entities.LatestVideoTa
 import com.datastaxtutorials.killrvideo_migration.dataapi.entities.VideoTableEntity;
 import com.datastaxtutorials.killrvideo_migration.models.LatestVideo;
 import com.datastaxtutorials.killrvideo_migration.models.Video;
+import com.datastaxtutorials.killrvideo_migration.models.VideoRating;
+import com.datastaxtutorials.killrvideo_migration.springentities.VideoEntity;
+import com.datastaxtutorials.killrvideo_migration.springentities.VideoRatingEntity;
+import com.datastaxtutorials.killrvideo_migration.springrepo.RatingsRepository;
+import com.datastaxtutorials.killrvideo_migration.springrepo.VideoRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -24,9 +30,13 @@ import jakarta.servlet.http.HttpServletRequest;
 public class Controller {
 
 	private DataAPIServices dataAPIServices;
+	private RatingsRepository ratingsRepository;
+	private VideoRepository videoRepository;
 	
-	public Controller(DataAPIServices dataAPIServices) {
+	public Controller(DataAPIServices dataAPIServices, RatingsRepository ratingsRepository, VideoRepository videoRepository) {
 		this.dataAPIServices = dataAPIServices;
+		this.ratingsRepository = ratingsRepository;
+		this.videoRepository = videoRepository;
 	}
 	
 	@GetMapping("/video/{videoid}")
@@ -76,6 +86,37 @@ public class Controller {
 		return returnVal.map(this::mapVideo);
 	}
 	
+	public List<Video> getVideosByTags(Set<String> tags, UUID videoid) {
+
+		List<Video> returnVal = new ArrayList<>();
+		List<UUID> videoIds = new ArrayList<>();
+		videoIds.add(videoid);
+		
+		for (String tag : tags) {
+			List<VideoEntity> videoEntities = videoRepository.findByTagsContaining(tag);
+			
+			for (VideoEntity videoEntity : videoEntities) {
+				if (!videoIds.contains(videoEntity.getVideoId())) {
+					returnVal.add(mapVideo(videoEntity));
+					videoIds.add(videoEntity.getVideoId());
+				}
+			}
+		}
+		
+		return returnVal;
+	}
+	
+	public Optional<VideoRating> getVideoRatings(UUID videoId) {
+		
+		Optional<VideoRatingEntity> returnVal = ratingsRepository.findById(videoId);
+		
+		if (returnVal.isEmpty()) {
+			return Optional.empty();
+		}
+				
+		return Optional.of(mapVideoRating(returnVal.get()));
+	}
+	
 	public List<LatestVideo> getLatest15Videos() {
 		
 		List<LatestVideo> returnVal = mapLatestVideos(dataAPIServices.findLimit15());
@@ -88,6 +129,24 @@ public class Controller {
 		List<LatestVideo> returnVal = mapLatestVideos(dataAPIServices.findLatestVideosByDay(yyyymmdd));
 
 		return returnVal;
+	}
+	
+	private Video mapVideo(VideoEntity videoEntity) {
+		
+		Video video = new Video();
+		
+		video.setVideoId(videoEntity.getVideoId());
+		video.setAddedDate(videoEntity.getAddedDate());
+		video.setDescription(videoEntity.getDescription());
+		video.setLocation(videoEntity.getLocation());
+		video.setLocationType(videoEntity.getLocationType());
+		video.setName(videoEntity.getName());
+		video.setPreviewImageLocation(videoEntity.getPreviewImageLocation());
+		video.setSolrQuery(videoEntity.getSolrQuery());
+		video.setTags(videoEntity.getTags());
+		video.setUserId(videoEntity.getUserId());
+		
+		return video;
 	}
 	
 	private Video mapVideo(VideoTableEntity videoEntity) {
@@ -140,5 +199,16 @@ public class Controller {
 		latestVideo.setUserId(latestVideoEntity.getUserId());
 		
 		return latestVideo;
+	}
+	
+	private VideoRating mapVideoRating(VideoRatingEntity videoRatingEntity) {
+		
+		VideoRating videoRating = new VideoRating();
+		
+		videoRating.setVideoid(videoRatingEntity.getVideoid());
+		videoRating.setRatingCounter(videoRatingEntity.getRatingCounter());
+		videoRating.setRatingTotal(videoRatingEntity.getRatingTotal());
+		
+		return videoRating;
 	}
 }

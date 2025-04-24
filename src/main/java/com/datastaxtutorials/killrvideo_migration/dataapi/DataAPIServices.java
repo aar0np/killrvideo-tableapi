@@ -16,6 +16,7 @@ import com.datastax.astra.client.tables.commands.options.TableFindOptions;
 import com.datastax.astra.client.tables.cursor.TableFindCursor;
 import com.datastaxtutorials.killrvideo_migration.dataapi.entities.LatestVideoTableEntity;
 import com.datastaxtutorials.killrvideo_migration.dataapi.entities.VideoTableEntity;
+import com.datastaxtutorials.killrvideo_migration.dataapi.entities.VideoRatingTableEntity;
 
 @Repository
 public class DataAPIServices {
@@ -33,11 +34,28 @@ public class DataAPIServices {
 	@Autowired
 	@Qualifier("table.latest_videos")
 	Table<LatestVideoTableEntity> latestVideosRepository;
+	
+	@Autowired
+	@Qualifier("table.video_ratings")
+	Table<VideoRatingTableEntity> videoRatingsRepository;
 
 	public Optional<VideoTableEntity> findVideoById(UUID videoId) {
 		Filter filter = new Filter(Map.of("videoid", videoId));
 		
 		return videosRepository.findOne(filter);
+	}
+	
+	public List<VideoTableEntity> findVideosByTag(String tag) {
+		
+		Filter filter = new Filter(Map.of("tags", tag));
+		
+		TableFindOptions options = new TableFindOptions();
+		options.limit(10);
+				
+		TableFindCursor<VideoTableEntity,VideoTableEntity> results =
+				videosRepository.find(filter, options);
+
+		return results.toList();
 	}
 	
 	public List<LatestVideoTableEntity> findLatestVideosByDay(String yyyymmdd) {
@@ -62,5 +80,12 @@ public class DataAPIServices {
 				latestVideosRepository.find(null, options);
 		
 		return results.toList();
+	}
+	
+	public Optional<VideoRatingTableEntity> findVideoRatingsById(UUID videoId) {
+		
+		Filter filter = new Filter(Map.of("videoid", videoId));
+		
+		return videoRatingsRepository.findOne(filter);
 	}
 }

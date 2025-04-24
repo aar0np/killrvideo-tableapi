@@ -1,32 +1,36 @@
-package com.datastaxtutorials.killrvideo_migration.dataapi.entities;
+package com.datastaxtutorials.killrvideo_migration.springentities;
 
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
-import com.datastax.astra.client.tables.mapping.Column;
-import com.datastax.astra.client.tables.mapping.EntityTable;
-import com.datastax.astra.client.tables.mapping.PartitionBy;
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 
-@EntityTable("videos")
-public class VideoTableEntity {
-
-	@PartitionBy(0)
-	@Column(name="videoid")
+@Table("videos")
+public class VideoEntity {
+	@PrimaryKey("videoid")
+	@Column("videoid")
 	private UUID videoId;
-	@Column(name="added_date")
+	
+	@Column("added_date")
 	private Instant addedDate;
 	private String description;
 	private String location;
-	@Column(name="location_type")
+	
+	@Column("location_type")
 	private String locationType;
 	private String name;
-	@Column(name="preview_image_location")
+	
+	@Column("preview_image_location")
 	private String previewImageLocation;
-	@Column(name="solr_query")
+	
+	@Column("solr_query")
 	private String solrQuery;
 	private Set<String> tags;
-	@Column(name="user_id")
+	
+	@Column("user_id")
 	private UUID userId;
 	
 	public UUID getVideoId() {
