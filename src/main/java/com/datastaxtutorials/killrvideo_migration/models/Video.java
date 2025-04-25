@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+import com.datastax.astra.client.core.vector.DataAPIVector;
+
 public class Video {
 
 	private UUID videoId;
@@ -16,6 +18,7 @@ public class Video {
 	private String locationType;
 	private String solrQuery;
 	private Set<String> tags;
+	private DataAPIVector videoVector;
 	
 	public UUID getVideoId() {
 		return this.videoId;
@@ -95,6 +98,14 @@ public class Video {
 
 	public void setTags(Set<String> tags) {
 		this.tags = tags;
+	}
+	
+	public DataAPIVector getVideoVector() {
+		return videoVector;
+	}
+	
+	public void setVideoVector(DataAPIVector videoVector) {
+		this.videoVector = videoVector;
 	}
 }
 

@@ -243,6 +243,7 @@ public class KillrvideoVaadinMainView extends VerticalLayout {
 		HorizontalLayout scrollLayout = new HorizontalLayout();
 		
 		List<Video> relatedVideos = controller.getVideosByTags(currentVideo.getTags(),
+		//List<Video> relatedVideos = controller.getVideosByVector(currentVideo.getVideoVector(),
 				currentVideo.getVideoId());
 		
 		for (Video video : relatedVideos) {

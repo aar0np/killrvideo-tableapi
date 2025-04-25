@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+import com.datastax.astra.client.core.vector.DataAPIVector;
+import com.datastax.astra.client.tables.definition.columns.ColumnTypes;
 import com.datastax.astra.client.tables.mapping.Column;
 import com.datastax.astra.client.tables.mapping.EntityTable;
 import com.datastax.astra.client.tables.mapping.PartitionBy;
@@ -28,6 +30,8 @@ public class VideoTableEntity {
 	private Set<String> tags;
 	@Column(name="user_id")
 	private UUID userId;
+	@Column(name="video_vector", type = ColumnTypes.VECTOR)
+	private DataAPIVector videoVector;
 	
 	public UUID getVideoId() {
 		return videoId;
@@ -88,5 +92,11 @@ public class VideoTableEntity {
 	}
 	public void setUserId(UUID userId) {
 		this.userId = userId;
+	}
+	public DataAPIVector getVideoVector() {
+		return videoVector;
+	}
+	public void setVideoVector(DataAPIVector videoVector) {
+		this.videoVector = videoVector;
 	}
 }

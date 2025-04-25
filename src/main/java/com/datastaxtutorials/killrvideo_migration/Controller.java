@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.datastax.astra.client.core.vector.DataAPIVector;
 import com.datastaxtutorials.killrvideo_migration.dataapi.DataAPIServices;
 import com.datastaxtutorials.killrvideo_migration.dataapi.entities.LatestVideoTableEntity;
 import com.datastaxtutorials.killrvideo_migration.dataapi.entities.VideoTableEntity;
@@ -84,6 +85,21 @@ public class Controller {
 		Optional<VideoTableEntity> returnVal =  dataAPIServices.findVideoById(videoId);
 		
 		return returnVal.map(this::mapVideo);
+	}
+	
+	public List<Video> getVideosByVector(DataAPIVector vector, UUID videoid) {
+
+		List<VideoTableEntity> videoEntities = dataAPIServices.findVideosByVector(vector);
+		
+		List<Video> returnVal = new ArrayList<>();
+		
+		for (VideoTableEntity videoEntity : videoEntities) {
+			if (!videoEntity.getVideoId().equals(videoid)) {
+				returnVal.add(mapVideo(videoEntity));
+			}
+		}
+		
+		return returnVal;
 	}
 	
 	public List<Video> getVideosByTags(Set<String> tags, UUID videoid) {
@@ -163,6 +179,7 @@ public class Controller {
 		video.setSolrQuery(videoEntity.getSolrQuery());
 		video.setTags(videoEntity.getTags());
 		video.setUserId(videoEntity.getUserId());
+		video.setVideoVector(videoEntity.getVideoVector());
 		
 		return video;
 	}

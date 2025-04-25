@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.datastax.astra.client.core.query.Filter;
+import com.datastax.astra.client.core.query.Sort;
+import com.datastax.astra.client.core.vector.DataAPIVector;
 import com.datastax.astra.client.databases.Database;
 import com.datastax.astra.client.tables.Table;
 import com.datastax.astra.client.tables.commands.options.TableFindOptions;
@@ -43,6 +45,13 @@ public class DataAPIServices {
 		Filter filter = new Filter(Map.of("videoid", videoId));
 		
 		return videosRepository.findOne(filter);
+	}
+	
+	public List<VideoTableEntity> findVideosByVector(DataAPIVector vector) {
+		return videosRepository.find(null, new TableFindOptions()
+				.sort(Sort.vector("video_vector", vector))
+				.limit(10))
+				.toList();
 	}
 	
 	public List<VideoTableEntity> findVideosByTag(String tag) {
